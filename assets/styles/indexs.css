@@ -13,51 +13,31 @@ html{
     color: rgb(0, 255, 0);
     list-style-type: none;
 }
-#main-container img{
-    display: block;
-    margin-left: auto; margin-right: auto;
-}
-input{
-    background-color:black;
-    color:rgb(0,255,0);
-    border:none;
-    margin-bottom:25px;
-    position: absolute;
-    top:70px;
-}
 img{
     margin-top:auto;
     float:right;
-    visibility: hidden;
 }
 li{
     margin-bottom:5px;
-    animation:typing 1s steps(40,end);
 }
 #htmlsearchresults{
+    margin-top: 25px;
     display:inline-block;
     top:100px;
     position: absolute;
 }
-#number_of_results{
+.responseBox{
     background-color:black;
     color:rgb(0,255,0);
     border:none;
     margin-bottom:25px;
-    position: absolute;
-    top:70px;
-    left:240px;
+    position: static;
+    outline: none;
+    margin-right:10px;
 }
 #title_ul{
     display: inline-block;
 }
 #title{
     display: inline-block;
-}
-@keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
-  }
-#coverart_frame{
-    bottom:500px;
 }

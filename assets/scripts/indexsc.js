@@ -16,9 +16,14 @@ let access_token = "";
 let apiresponse = [];
 let searchresults = [];
 let numberofsearches = 1;
+let userdata = [];
+let UserDataFinished = false;
 
 window.addEventListener("load", () => {
   getauth();
+  APICall("me",userdata,()=>{
+    title();
+  });
 });
 
 create_input.addEventListener(
@@ -43,7 +48,7 @@ create_input.addEventListener(
         .then(function (response) {
           if (response.status === 401) {
             window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=https://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=https://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
               "_self"
             );
           }
@@ -94,7 +99,7 @@ create_input2.addEventListener(
         .then(function (response) {
           if (response.status === 401) {
             window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=https://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
               "_self"
             );
           }
@@ -105,6 +110,18 @@ create_input2.addEventListener(
           }
         })
         .then(function (data) {
+
+          if(userdata[0].explicit_content.filter_enabled == true){
+            for(let i = 0; i < data.tracks.items.length; i++){
+              if(data.tracks.items[i].explicit == true){
+                data.tracks.items.splice(i,1);
+                document.getElementById("htmlsearchresults").innerHTML = `
+                <li>Explicit content is disabled in your account settings.</li>
+                `;
+              }
+            }
+          }
+        else if(userdata[0].explicit_content.filter_enabled != true){
           apiresponse.push(data);
           searchresults = apiresponse[0].tracks.items;
           if (numberofsearches > 1) {
@@ -114,7 +131,7 @@ create_input2.addEventListener(
           }
           numberofsearches = numberofsearches + 1;
           responsetohtml();
-        })
+        }})
         .catch(function (err) {
           console.warn("Something went wrong.", err);
         });
@@ -126,11 +143,14 @@ create_input2.addEventListener(
 create_input.placeholder = "<ENTER RESPONSE HERE>";
 create_input.id = "user_response";
 create_input.type = "text";
-create_input.formMethod = "GET";
+create_input.setAttribute('class', 'responseBox')
+create_input.style.display="inline-block";
 
 create_input2.placeholder = "NUMBER OF RESULTS";
 create_input2.id = "number_of_results";
 create_input2.type = "text";
+create_input2.setAttribute('class', 'responseBox')
+create_input2.style.display="inline-block";
 
 function getauth() {
   var str = window.location.href;
@@ -140,7 +160,7 @@ function getauth() {
     title();
   } else {
     window.open(
-      "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=https://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+      "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
       "_self"
     );
   }
@@ -156,7 +176,7 @@ function title() {
     time.getFullYear() +
     "_";
   setTimeout(() => {
-    li1.innerText = "WELCOME, [USER]";
+    li1.innerText = `WELCOME, ${userdata[0].display_name}!`;
     setTimeout(() => {
       li2.innerText = "PLEASE ENTER YOUR DESIRED ARTIST: ";
       setTimeout(() => {
@@ -168,6 +188,7 @@ function title() {
 }
 
 function responsetohtml() {
+
   for (let x = 0; x < searchresults.length; x++) {
     let y = document.createElement("li");
     let z = document.createElement("audio");
@@ -182,17 +203,10 @@ function responsetohtml() {
     htmlsearchresults.appendChild(y);
     y.addEventListener("click", () => {
       let temp = x;
-      coverart_frame.src = searchresults[temp].album.images[0].url;
-      coverart_frame.style.visibility = "visible";
-      // eslint-disable-next-line no-undef
-      $("#coverart_frame").wrap(
-        "<a href=" +
-          "'" +
-          searchresults[temp].external_urls.spotify +
-          "'" +
-          " target='_blank'" +
-          "</a>"
-      );
+      document.getElementById("coverart_div").style.visibility = "visible";
+      document.getElementById("coverart_div").innerHTML=`
+      <a href="${searchresults[temp].album.external_urls.spotify}" target="_blank"><img src="${searchresults[temp].album.images[0].url}" alt="cover art" id="coverart" height="250" width="250"></a>
+      `
 
       console.log(temp);
       playaudio(temp);
@@ -205,9 +219,9 @@ function playaudio(index) {
   document.getElementById("audio_" + index).play();
 }
 
-function APICall (query){
+function APICall (query,outputlist,callback){
   apiresponse = [];
-  console.warn(query);
+  console.warn(`CALLING:https://api.spotify.com/v1/${query}, AND PUSHING TO ${outputlist}`);
   fetch(
     `https://api.spotify.com/v1/${query}`,
     {
@@ -220,7 +234,7 @@ function APICall (query){
     .then(function (response) {
       if (response.status === 401) {
         window.open(
-          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=https://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=http://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
           "_self"
         );
       }
@@ -231,9 +245,10 @@ function APICall (query){
       }
     })
     .then(function (data) {
-      apiresponse.push(data);
+      outputlist.push(data);
     })
     .catch(function (err) {
       console.warn("Something went wrong.", err);
     });
+    callback();
 }
