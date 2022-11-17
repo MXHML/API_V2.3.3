@@ -5,11 +5,9 @@ let li2 = document.getElementById("li2");
 let create_input = document.createElement("input");
 let create_input2 = document.createElement("input");
 let title_ul = document.getElementById("title_ul");
-let coverart_frame = document.getElementById("coverart_frame");
 // eslint-disable-next-line no-unused-vars
 let coverart_div = document.getElementById("coverart_div");
 let htmlsearchresults = document.getElementById("htmlsearchresults");
-let createbr = document.createElement("br");
 
 const time = new Date();
 let access_token = "";
@@ -17,7 +15,8 @@ let apiresponse = [];
 let searchresults = [];
 let numberofsearches = 1;
 let userdata = [];
-let UserDataFinished = false;
+let topartsits = [];
+let topsongs = [];
 
 window.addEventListener("load", () => {
   getauth();
@@ -30,6 +29,19 @@ create_input.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
+      if(create_input.value=="top artists"){
+        topartsits=[];
+        APICall(`me/top/artists?&limit=${create_input2.value}`,topartsits,()=>{
+          topartiststohtml();
+        })
+      }
+      else if(create_input.value=="top songs"){
+        topsongs=[];
+        APICall(`me/top/tracks?&limit=${create_input2.value}`,topsongs,()=>{
+          topsongstohtml();
+        })
+      }
+    else{
       apiresponse = [];
       let searchentry = create_input.value.replace("", "%20");
       fetch(
@@ -48,7 +60,7 @@ create_input.addEventListener(
         .then(function (response) {
           if (response.status === 401) {
             window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=https://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500/index.html&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
               "_self"
             );
           }
@@ -72,7 +84,7 @@ create_input.addEventListener(
         .catch(function (err) {
           console.warn("Something went wrong.", err);
         });
-    }
+    }}
   },
   false
 );
@@ -81,6 +93,19 @@ create_input2.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
+      if(create_input.value=="top artists"){
+        topartsits=[];
+        APICall(`me/top/artists?&limit=${create_input2.value}`,topartsits,()=>{
+          topartiststohtml();
+        })
+      }
+      else if(create_input.value=="top songs"){
+        topsongs=[];
+        APICall(`me/top/tracks?&limit=${create_input2.value}`,topsongs,()=>{
+          topsongstohtml();
+        })
+      }
+    else{
       apiresponse = [];
       let searchentry = create_input.value.replace("", "%20");
       fetch(
@@ -124,18 +149,13 @@ create_input2.addEventListener(
         else if(userdata[0].explicit_content.filter_enabled != true){
           apiresponse.push(data);
           searchresults = apiresponse[0].tracks.items;
-          if (numberofsearches > 1) {
-            while (htmlsearchresults.firstChild) {
-              htmlsearchresults.removeChild(htmlsearchresults.lastChild);
-            }
-          }
           numberofsearches = numberofsearches + 1;
           responsetohtml();
         }})
         .catch(function (err) {
           console.warn("Something went wrong.", err);
         });
-    }
+    }}
   },
   false
 );
@@ -171,14 +191,14 @@ function title() {
     // eslint-disable-next-line no-undef
     months[time.getMonth()] +
     "_" +
-    time.getDay() +
+    time.getDate() +
     "_" +
     time.getFullYear() +
     "_";
   setTimeout(() => {
     li1.innerText = `WELCOME, ${userdata[0].display_name}!`;
     setTimeout(() => {
-      li2.innerText = "PLEASE ENTER YOUR DESIRED ARTIST: ";
+      li2.innerText = "PLEASE ENTER YOUR DESIRED CATEGORY: (search for an artist, 'top songs', or 'top artists'";
       setTimeout(() => {
         title_ul.appendChild(create_input);
         title_ul.appendChild(create_input2);
@@ -188,6 +208,9 @@ function title() {
 }
 
 function responsetohtml() {
+  while (htmlsearchresults.firstChild) {
+    htmlsearchresults.removeChild(htmlsearchresults.lastChild);
+  }
 
   for (let x = 0; x < searchresults.length; x++) {
     let y = document.createElement("li");
@@ -206,8 +229,9 @@ function responsetohtml() {
       document.getElementById("coverart_div").style.visibility = "visible";
       document.getElementById("coverart_div").innerHTML=`
       <a href="${searchresults[temp].album.external_urls.spotify}" target="_blank"><img src="${searchresults[temp].album.images[0].url}" alt="cover art" id="coverart" height="250" width="250"></a>
+      <a class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a>
       `
-
+      
       console.log(temp);
       playaudio(temp);
     });
@@ -217,6 +241,51 @@ function responsetohtml() {
 function playaudio(index) {
   document.querySelectorAll("audio").forEach((el) => el.pause());
   document.getElementById("audio_" + index).play();
+}
+
+function topartiststohtml(){
+  let parent = document.getElementById("htmlsearchresults");
+  while(parent.firstChild){
+    parent.removeChild(parent.lastChild);
+  }
+  for(let x=0;x<topartsits[0].items.length;x++){
+    console.warn(`TOP ARTISTS INDEX: ${x}`);
+    let y = document.createElement("li");
+    y.innerHTML=`${x+1}) ${topartsits[0].items[x].name}`
+    htmlsearchresults.appendChild(y);
+    y.addEventListener("click",()=>{
+      document.getElementById("coverart_div").innerHTML=`
+      <a href="${topartsits[0].items[x].external_urls.spotify}" target="_blank"><img src="${topartsits[0].items[x].images[0].url}" height="250" width="250"></a>
+      `
+    })
+  }
+}
+
+function topsongstohtml(){
+  let parent = document.getElementById("htmlsearchresults");
+  while(parent.firstChild){
+    parent.removeChild(parent.lastChild);
+  }
+  for(let x=0;x<topsongs[0].items.length;x++){
+    let y = document.createElement("li");
+    let z = document.createElement("audio");
+    z.src = topsongs[0].items[x].preview_url;
+    z.id = `audio_`+x;
+    y.innerHTML=`${x+1}) ${topsongs[0].items[x].name} (${topsongs[0].items[x].artists[0].name})`
+    if(topsongs[0].items[x].preview_url==null){
+      y.innerHTML = y.innerHTML + `<div class="red"> (Preview not availavle)</div>`
+    }
+    htmlsearchresults.appendChild(y);
+    htmlsearchresults.appendChild(z);
+    y.addEventListener("click",()=>{
+      let temp =x;
+      document.getElementById("coverart_div").innerHTML=`
+      <a href="${topsongs[0].items[x].album.external_urls.spotify}" target="_blank"><img src="${topsongs[0].items[x].album.images[0].url}" height="250" width="250"></a>
+      <a class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a>
+      `
+      playaudio(temp);
+    })
+  }
 }
 
 function APICall (query,outputlist,callback){
@@ -234,7 +303,7 @@ function APICall (query,outputlist,callback){
     .then(function (response) {
       if (response.status === 401) {
         window.open(
-          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=http://projectstorage.xyz&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
           "_self"
         );
       }
@@ -247,8 +316,10 @@ function APICall (query,outputlist,callback){
     .then(function (data) {
       outputlist.push(data);
     })
+    .then(()=>{
+      callback();
+    })
     .catch(function (err) {
       console.warn("Something went wrong.", err);
     });
-    callback();
 }

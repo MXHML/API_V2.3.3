@@ -41,3 +41,15 @@ li{
 #title{
     display: inline-block;
 }
+.pauseBtn{
+    cursor: pointer;
+    font-size: 30px;
+    color:rgb(0, 255, 0);
+    position: absolute;
+    left:93vw;
+    top:26vh;
+}
+.red{
+    display: inline;
+    color:red;
+}
