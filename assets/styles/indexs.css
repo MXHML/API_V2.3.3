@@ -53,3 +53,10 @@ li{
     display: inline;
     color:red;
 }
+.disabled{
+    color:grey;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    display: inline;
+    pointer-events: none;
+}

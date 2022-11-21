@@ -1,4 +1,5 @@
 
+
 //Variables & constants
 let li1 = document.getElementById("li1");
 let li2 = document.getElementById("li2");
@@ -8,6 +9,7 @@ let title_ul = document.getElementById("title_ul");
 // eslint-disable-next-line no-unused-vars
 let coverart_div = document.getElementById("coverart_div");
 let htmlsearchresults = document.getElementById("htmlsearchresults");
+let apiresponseCode = ''
 
 const time = new Date();
 let access_token = "";
@@ -17,6 +19,8 @@ let numberofsearches = 1;
 let userdata = [];
 let topartsits = [];
 let topsongs = [];
+let templist = []; //used for testing API calls
+let explicitSongs = [];
 
 window.addEventListener("load", () => {
   getauth();
@@ -43,51 +47,15 @@ create_input.addEventListener(
       }
     else{
       apiresponse = [];
-      let searchentry = create_input.value.replace("", "%20");
-      fetch(
-        "https://api.spotify.com/v1/search?q=" +
-          searchentry +
-          "&type=track" +
-          "&limit=" +
-          create_input2.value,
-        {
-          headers: new Headers({
-            Authorization: "Bearer " + access_token,
-          }),
-          method: "GET",
+      let searchentry = create_input.value.replace(" ", "%20");
+      console.log(searchentry);
+      APICall(
+        `search?q=${searchentry}&type=track&limit=${create_input2.value}`,apiresponse,()=>{
+            searchresults = apiresponse[0].tracks.items;
+            responsetohtml();
+          })
         }
-      )
-        .then(function (response) {
-          if (response.status === 401) {
-            window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500/index.html&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
-              "_self"
-            );
-          }
-          if (response.ok) {
-            return response.json();
-          } else {
-            return Promise.reject(response);
-          }
-        })
-        .then(function (data) {
-          apiresponse.push(data);
-          searchresults = apiresponse[0].tracks.items;
-          if (numberofsearches > 1) {
-            while (htmlsearchresults.firstChild) {
-              htmlsearchresults.removeChild(htmlsearchresults.lastChild);
-            }
-          }
-          numberofsearches = numberofsearches + 1;
-          responsetohtml();
-        })
-        .catch(function (err) {
-          console.warn("Something went wrong.", err);
-        });
-    }}
-  },
-  false
-);
+      }})
 
 create_input2.addEventListener(
   "keypress",
@@ -107,58 +75,14 @@ create_input2.addEventListener(
       }
     else{
       apiresponse = [];
-      let searchentry = create_input.value.replace("", "%20");
-      fetch(
-        "https://api.spotify.com/v1/search?q=" +
-          searchentry +
-          "&type=track" +
-          "&limit=" +
-          create_input2.value,
-        {
-          headers: new Headers({
-            Authorization: "Bearer " + access_token,
-          }),
-          method: "GET",
-        }
-      )
-        .then(function (response) {
-          if (response.status === 401) {
-            window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
-              "_self"
-            );
-          }
-          if (response.ok) {
-            return response.json();
-          } else {
-            return Promise.reject(response);
-          }
-        })
-        .then(function (data) {
-
-          if(userdata[0].explicit_content.filter_enabled == true){
-            for(let i = 0; i < data.tracks.items.length; i++){
-              if(data.tracks.items[i].explicit == true){
-                data.tracks.items.splice(i,1);
-                document.getElementById("htmlsearchresults").innerHTML = `
-                <li>Explicit content is disabled in your account settings.</li>
-                `;
-              }
-            }
-          }
-        else if(userdata[0].explicit_content.filter_enabled != true){
-          apiresponse.push(data);
+      let searchentry = create_input.value.replace(" ", "%20");
+      console.log(searchentry);
+      APICall(
+        `search?q=${searchentry}&type=track&limit=${create_input2.value}`,apiresponse,()=>{
           searchresults = apiresponse[0].tracks.items;
-          numberofsearches = numberofsearches + 1;
           responsetohtml();
-        }})
-        .catch(function (err) {
-          console.warn("Something went wrong.", err);
-        });
-    }}
-  },
-  false
-);
+        })
+      }}})
 //Functions
 create_input.placeholder = "<ENTER RESPONSE HERE>";
 create_input.id = "user_response";
@@ -218,12 +142,17 @@ function responsetohtml() {
 
     y.innerHTML = searchresults[x].name;
     y.id = x;
-
+    if(userdata[0].explicit_content.filter_enabled==true){
+      if(searchresults[x].explicit==true){
+      y.innerHTML=`<div class=disabled>${searchresults[x].name}</div> <div class=red>EXPLICIT SONG</div>`
+    }}
+    if(userdata[0].explicit_content.filter_enabled==false){
     z.src = searchresults[x].preview_url;
     z.id = "audio_" + x;
-
+    }
     htmlsearchresults.appendChild(z);
     htmlsearchresults.appendChild(y);
+    if(userdata[0].explicit_content.filter_enabled==false){
     y.addEventListener("click", () => {
       let temp = x;
       document.getElementById("coverart_div").style.visibility = "visible";
@@ -234,7 +163,7 @@ function responsetohtml() {
       
       console.log(temp);
       playaudio(temp);
-    });
+    })}
   }
 }
 
@@ -289,8 +218,7 @@ function topsongstohtml(){
 }
 
 function APICall (query,outputlist,callback){
-  apiresponse = [];
-  console.warn(`CALLING:https://api.spotify.com/v1/${query}, AND PUSHING TO ${outputlist}`);
+  console.warn(`CALLING:https://api.spotify.com/v1/${query}, AND PUSHING TO ${toString(outputlist)}`);
   fetch(
     `https://api.spotify.com/v1/${query}`,
     {
@@ -301,6 +229,7 @@ function APICall (query,outputlist,callback){
     }
   )
     .then(function (response) {
+      apiresponseCode=response.status;
       if (response.status === 401) {
         window.open(
           "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
@@ -316,10 +245,9 @@ function APICall (query,outputlist,callback){
     .then(function (data) {
       outputlist.push(data);
     })
-    .then(()=>{
-      callback();
-    })
     .catch(function (err) {
       console.warn("Something went wrong.", err);
-    });
+    }).then(()=>{
+      callback();
+    })
 }
