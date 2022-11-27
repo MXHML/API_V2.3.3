@@ -60,7 +60,7 @@ create_input.addEventListener(
         .then(function (response) {
           if (response.status === 401) {
             window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500/index.html&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=https://mxhml.github.io/API_V2.3.3/&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
               "_self"
             );
           }
@@ -124,7 +124,7 @@ create_input2.addEventListener(
         .then(function (response) {
           if (response.status === 401) {
             window.open(
-              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+              "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=https://mxhml.github.io/API_V2.3.3/&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
               "_self"
             );
           }
@@ -180,7 +180,7 @@ function getauth() {
     title();
   } else {
     window.open(
-      "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+      "https://accounts.spotify.com/en/authorize?response_type=token&client_id=f6db8902d1a94c1a854359ab73e38d0d&redirect_uri=https://mxhml.github.io/API_V2.3.3/&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
       "_self"
     );
   }
@@ -303,7 +303,7 @@ function APICall (query,outputlist,callback){
     .then(function (response) {
       if (response.status === 401) {
         window.open(
-          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=http://127.0.0.1:5500&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
+          "https://accounts.spotify.com/en/authorize?response_type=token&client_id=9bf2e0b5a7284542864ee9109927b0a1&redirect_uri=https://mxhml.github.io/API_V2.3.3/&show_dialog=true&scope=user-top-read%20user-read-private%20user-read-playback-state",
           "_self"
         );
       }
