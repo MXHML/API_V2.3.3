@@ -3,13 +3,14 @@
 //Variables & constants
 let li1 = document.getElementById("li1");
 let li2 = document.getElementById("li2");
-let create_input = document.createElement("input");
-let create_input2 = document.createElement("input");
+let user_response = document.getElementById("user_response")
+let number_of_results = document.getElementById("number_of_results")
 let title_ul = document.getElementById("title_ul");
 // eslint-disable-next-line no-unused-vars
-let coverart_div = document.getElementById("coverart_div");
 let htmlsearchresults = document.getElementById("htmlsearchresults");
 let apiresponseCode = ''
+let coverart_wrapper = document.getElementById("coverart_wrapper");
+let coverart_image = document.getElementById("coverart");
 
 const time = new Date();
 let access_token = "";
@@ -27,74 +28,68 @@ window.addEventListener("load", () => {
   APICall("me",userdata,()=>{
     title();
   });
+  if(window.innerWidth<1020==true){
+    coverart_image.style.position="absolute";
+    coverart_image.style.left=window.outerWidth/4+"px"
+    htmlsearchresults.style.top=number_of_results.getBoundingClientRect().y+90+"px"
+  }
 });
 
-create_input.addEventListener(
+user_response.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
-      if(create_input.value=="top artists"){
+      if(user_response.value=="top artists"){
         topartsits=[];
-        APICall(`me/top/artists?&limit=${create_input2.value}`,topartsits,()=>{
+        APICall(`me/top/artists?&limit=${number_of_results.value}`,topartsits,()=>{
           topartiststohtml();
         })
       }
-      else if(create_input.value=="top songs"){
+      else if(user_response.value=="top songs"){
         topsongs=[];
-        APICall(`me/top/tracks?&limit=${create_input2.value}`,topsongs,()=>{
+        APICall(`me/top/tracks?&limit=${number_of_results.value}`,topsongs,()=>{
           topsongstohtml();
         })
       }
     else{
       apiresponse = [];
-      let searchentry = create_input.value.replace(" ", "%20");
+      let searchentry = user_response.value.replace(" ", "%20");
       console.log(searchentry);
       APICall(
-        `search?q=${searchentry}&type=track&limit=${create_input2.value}`,apiresponse,()=>{
+        `search?q=${searchentry}&type=track&limit=${number_of_results.value}`,apiresponse,()=>{
             searchresults = apiresponse[0].tracks.items;
             responsetohtml();
           })
         }
       }})
 
-create_input2.addEventListener(
+number_of_results.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
-      if(create_input.value=="top artists"){
+      if(user_response.value=="top artists"){
         topartsits=[];
-        APICall(`me/top/artists?&limit=${create_input2.value}`,topartsits,()=>{
+        APICall(`me/top/artists?&limit=${number_of_results.value}`,topartsits,()=>{
           topartiststohtml();
         })
       }
-      else if(create_input.value=="top songs"){
+      else if(user_response.value=="top songs"){
         topsongs=[];
-        APICall(`me/top/tracks?&limit=${create_input2.value}`,topsongs,()=>{
+        APICall(`me/top/tracks?&limit=${number_of_results.value}`,topsongs,()=>{
           topsongstohtml();
         })
       }
     else{
       apiresponse = [];
-      let searchentry = create_input.value.replace(" ", "%20");
+      let searchentry = user_response.value.replace(" ", "%20");
       console.log(searchentry);
       APICall(
-        `search?q=${searchentry}&type=track&limit=${create_input2.value}`,apiresponse,()=>{
+        `search?q=${searchentry}&type=track&limit=${number_of_results.value}`,apiresponse,()=>{
           searchresults = apiresponse[0].tracks.items;
           responsetohtml();
         })
       }}})
 //Functions
-create_input.placeholder = "<ENTER RESPONSE HERE>";
-create_input.id = "user_response";
-create_input.type = "text";
-create_input.setAttribute('class', 'responseBox')
-create_input.style.display="inline-block";
-
-create_input2.placeholder = "NUMBER OF RESULTS";
-create_input2.id = "number_of_results";
-create_input2.type = "text";
-create_input2.setAttribute('class', 'responseBox')
-create_input2.style.display="inline-block";
 
 function getauth() {
   var str = window.location.href;
@@ -112,7 +107,6 @@ function getauth() {
 
 function title() {
   li1.innerText =
-    // eslint-disable-next-line no-undef
     months[time.getMonth()] +
     "_" +
     time.getDate() +
@@ -122,10 +116,10 @@ function title() {
   setTimeout(() => {
     li1.innerText = `WELCOME, ${userdata[0].display_name}!`;
     setTimeout(() => {
-      li2.innerText = "PLEASE ENTER YOUR DESIRED CATEGORY: (search for an artist, 'top songs', or 'top artists'";
+      li2.innerText = "PLEASE ENTER YOUR DESIRED CATEGORY: (search for an artist, 'top songs', or 'top artists')";
       setTimeout(() => {
-        title_ul.appendChild(create_input);
-        title_ul.appendChild(create_input2);
+      user_response.style.visibility="visible"
+      number_of_results.style.visibility="visible"
       }, 1000);
     }, 2000);
   }, 2000);
@@ -155,12 +149,13 @@ function responsetohtml() {
     if(userdata[0].explicit_content.filter_enabled==false){
     y.addEventListener("click", () => {
       let temp = x;
-      document.getElementById("coverart_div").style.visibility = "visible";
-      document.getElementById("coverart_div").innerHTML=`
-      <a href="${searchresults[temp].album.external_urls.spotify}" target="_blank"><img src="${searchresults[temp].album.images[0].url}" alt="cover art" id="coverart" height="250" width="250"></a>
-      <a class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a>
-      `
-      
+      let pauseBtn = document.getElementById("pauseBtn")
+      coverart_wrapper.href=searchresults[temp].album.external_urls.spotify; coverart_wrapper.style.visibility="visible";
+      coverart_image.src=searchresults[temp].album.images[0].url; coverart_image.style.visibility="visible"
+      pauseBtn.style.visibility="visible"
+      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().height+200+"px"}
+      pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
+      pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
       console.log(temp);
       playaudio(temp);
     })}
@@ -183,9 +178,14 @@ function topartiststohtml(){
     y.innerHTML=`${x+1}) ${topartsits[0].items[x].name}`
     htmlsearchresults.appendChild(y);
     y.addEventListener("click",()=>{
-      document.getElementById("coverart_div").innerHTML=`
-      <a href="${topartsits[0].items[x].external_urls.spotify}" target="_blank"><img src="${topartsits[0].items[x].images[0].url}" height="250" width="250"></a>
-      `
+      coverart_image.style.visibility="visible"
+      coverart_wrapper.style.visibility="visible";
+      pauseBtn.style.visibility="visible"
+      coverart_wrapper.href=topartsits[0].items[x].external_urls.spotify
+      coverart_image.src=topartsits[0].items[x].images[0].url
+      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().y+100+"px"}
+      pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
+      pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
     })
   }
 }
@@ -208,10 +208,14 @@ function topsongstohtml(){
     htmlsearchresults.appendChild(z);
     y.addEventListener("click",()=>{
       let temp =x;
-      document.getElementById("coverart_div").innerHTML=`
-      <a href="${topsongs[0].items[x].album.external_urls.spotify}" target="_blank"><img src="${topsongs[0].items[x].album.images[0].url}" height="250" width="250"></a>
-      <a class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a>
-      `
+      coverart_image.style.visibility="visible"
+      coverart_wrapper.style.visibility="visible";
+      pauseBtn.style.visibility="visible"
+      coverart_wrapper.href=topsongs[0].items[x].album.external_urls.spotify
+      coverart_image.src=topsongs[0].items[x].album.images[0].url
+      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().y+100+"px"}
+      pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
+      pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
       playaudio(temp);
     })
   }

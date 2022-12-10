@@ -6,25 +6,20 @@
 html{
     background-color: black;
 }
-#title{
-    margin-bottom:9%;
-}
-#title li{
+li{
     color: rgb(0, 255, 0);
     list-style-type: none;
+    margin-bottom: 9px;
 }
-img{
-    margin-top:auto;
-    float:right;
-}
-li{
-    margin-bottom:5px;
+#title_ul{
+    margin:0px;
+    position: absolute;
 }
 #htmlsearchresults{
-    margin-top: 25px;
-    display:inline-block;
+    margin-top: 0px;
     top:100px;
     position: absolute;
+    padding-left: 40px;
 }
 .responseBox{
     background-color:black;
@@ -45,9 +40,7 @@ li{
     cursor: pointer;
     font-size: 30px;
     color:rgb(0, 255, 0);
-    position: absolute;
-    left:93vw;
-    top:26vh;
+    position:absolute;
 }
 .red{
     display: inline;
@@ -59,4 +52,8 @@ li{
     text-decoration: line-through;
     display: inline;
     pointer-events: none;
+}
+.coverart{
+    margin-top:auto;
+    float:right;
 }

@@ -9,23 +9,18 @@
 </head>
 <body>
 <div id="main-container">
-    <div id="coverart_div" style="z-index:10;">
-        </div>
-    <div id="title">
+    </div>
         <ul id="title_ul">
             <li id="li1"></li>
             <li id="li2"></li>
-            <div id="htmlsearchresults">
-
-            </div>
+            <input placeholder="<ENTER RESPONSE HERE>" id="user_response" type="text" class="responseBox" style="display: inline-block;visibility: hidden;">
+            <input placeholder="NUMBER OF RESULTS" id="number_of_results" type="text" class="responseBox" style="display: inline-block;visibility: hidden;">
         </ul>
+        <div id="htmlsearchresults"></div>
+        <div id="coverart_wrapper_main">
+        <a href="#" id="coverart_wrapper" target="_blank"><img src="#" id="coverart" height="250" width="250" style="visibility:hidden" class="coverart"><a id="pauseBtn" style="visibility:hidden" class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a></a>
+        </div>
     </div>
-
-    <div id="current-user">
-        <h1 id="current_user_h1"></h1>
-        <img id="current_user_img" src="">
-    </div>
-</div>
 </body>
 
 <script src="/assets/scripts/storage.js"></script>
