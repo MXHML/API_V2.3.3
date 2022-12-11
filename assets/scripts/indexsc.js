@@ -34,11 +34,30 @@ window.addEventListener("load", () => {
     htmlsearchresults.style.top=number_of_results.getBoundingClientRect().y+90+"px"
   }
 });
+window.addEventListener('resize',()=>{
+  if(window.innerWidth<1020==true){
+    coverart_image.style.position="absolute";
+    coverart_image.style.left=window.outerWidth/4+"px"
+    coverart_image.style.top=htmlsearchresults.getBoundingClientRect().height+200+"px"
+    pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
+    pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
+  }
+    else{
+      coverart_image.style="visibility:visible;"
+      pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
+      pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
+    }
+})
 
 user_response.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
+      if(window.outerWidth<1020==true){
+        if(number_of_results.value>10==true){
+          number_of_results.value=10
+        }
+      }
       if(user_response.value=="top artists"){
         topartsits=[];
         APICall(`me/top/artists?&limit=${number_of_results.value}`,topartsits,()=>{
@@ -67,6 +86,11 @@ number_of_results.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
+      if(window.outerWidth<1020==true){
+        if(number_of_results.value>10){
+          number_of_results.value=10
+        }
+      }
       if(user_response.value=="top artists"){
         topartsits=[];
         APICall(`me/top/artists?&limit=${number_of_results.value}`,topartsits,()=>{
@@ -154,6 +178,7 @@ function responsetohtml() {
       coverart_image.src=searchresults[temp].album.images[0].url; coverart_image.style.visibility="visible"
       pauseBtn.style.visibility="visible"
       if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().height+200+"px"}
+
       pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
       pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
       console.log(temp);
@@ -183,7 +208,7 @@ function topartiststohtml(){
       pauseBtn.style.visibility="visible"
       coverart_wrapper.href=topartsits[0].items[x].external_urls.spotify
       coverart_image.src=topartsits[0].items[x].images[0].url
-      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().y+100+"px"}
+      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().height+200+"px"}
       pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
       pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
     })
@@ -213,7 +238,7 @@ function topsongstohtml(){
       pauseBtn.style.visibility="visible"
       coverart_wrapper.href=topsongs[0].items[x].album.external_urls.spotify
       coverart_image.src=topsongs[0].items[x].album.images[0].url
-      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().y+100+"px"}
+      if(window.innerWidth<1020==true){coverart_image.style.top=htmlsearchresults.getBoundingClientRect().height+200+"px"}
       pauseBtn.style.left=coverart_image.getBoundingClientRect().x+117+"px";
       pauseBtn.style.top=coverart_image.getBoundingClientRect().y+270+"px"
       playaudio(temp);
