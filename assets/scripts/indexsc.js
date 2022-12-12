@@ -86,7 +86,7 @@ number_of_results.addEventListener(
   "keypress",
   (event) => {
     if (event.key == "Enter") {
-      if(window.outerWidth<1020==true){
+      if(window.innerWidth<1020==true){
         if(number_of_results.value>10){
           number_of_results.value=10
         }
