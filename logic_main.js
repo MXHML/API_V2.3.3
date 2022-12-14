@@ -30,6 +30,7 @@ async function typeWriter(target,speed,finalText){
 
 
 //Native sleep function !?!?!?!?!? (Code from https://www.sitepoint.com/delay-sleep-pause-wait/)
+//Yes, I could've just used setTimeout(), but this allows me to use it inside an async function
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
