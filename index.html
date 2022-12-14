@@ -4,28 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="/assets/styles/indexs.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="style_main.css">
 </head>
 <body>
-<div id="main-container">
-    </div>
-        <ul id="title_ul">
-            <li id="li1"></li>
-            <li id="li2"></li>
-            <input placeholder="<ENTER RESPONSE HERE>" id="user_response" type="text" class="responseBox" style="display: inline-block;visibility: hidden;">
-            <input placeholder="NUMBER OF RESULTS" id="number_of_results" type="text" class="responseBox" style="display: inline-block;visibility: hidden;">
-        </ul>
-        <div id="htmlsearchresults"></div>
-        <div id="coverart_wrapper_main">
-        <a href="#" id="coverart_wrapper" target="_blank"><img src="#" id="coverart" height="250" width="250" style="visibility:hidden" class="coverart"><a id="pauseBtn" style="visibility:hidden" class="pauseBtn" onclick="document.querySelectorAll('audio').forEach((el) => el.pause());">&#10073;&#10073;</a></a>
-        </div>
-    </div>
+   <p id="welcomeMsg"></p><br> <!--Too lazy to add CSS styling-->
+   <p id="welcomeMsg2"></p><br>
+   <a href="spotify_prot/index.html"><p style="margin-right:5%" id="option_spotify"></p></a><a href="#"><p id="option_genius"></p></a>
 </body>
-
-<script src="/assets/scripts/storage.js"></script>
-
-<script src="/assets/scripts/jquery3-6-1.js"></script>
-
-<script src="/assets/scripts/indexsc.js"></script>
+<script type="text/javascript" src="logic_main.js"></script>
 </html>

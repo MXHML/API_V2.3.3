@@ -18,7 +18,7 @@ li{
 #htmlsearchresults{
     margin-top: 0px;
     top:100px;
-    position: absolute;
+    position: fixed;
     padding-left: 40px;
 }
 .responseBox{
