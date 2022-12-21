@@ -1,7 +1,7 @@
 const welcomeMsg = document.getElementById("welcomeMsg");
 const welcomeMsg2 = document.getElementById("welcomeMsg2");
 const spotify_btn = document.getElementById("option_spotify");
-const genius_btn = document.getElementById("option_genius");
+const logged_out_btn = document.getElementById("option_logged_out");
 window.addEventListener("load", () => {
   typeWriter(welcomeMsg, 100, "Welcome!");
   sleep(3000)
@@ -15,7 +15,7 @@ window.addEventListener("load", () => {
         })
         .then(() => {
           sleep(3000).then(() => {
-            typeWriter(genius_btn, 100, "Genius");
+            typeWriter(logged_out_btn, 100, "Spotify (Logged out, limited functionality)");
           });
         });
     });
