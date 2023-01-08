@@ -5,6 +5,7 @@ html{
     height:100vh;
     width:100vw;
     background-image:linear-gradient(to right,rgb(209, 203, 203),rgb(155, 152, 152));
+    overflow-x: hidden;
 }
 .spot-logo{
     height:40%;
@@ -50,5 +51,8 @@ input:focus{
 .response-card{
     background:rgba(255,255,255,0.6) !important;
     display: inline-block !important;
-    margin:0 !important;
+    margin:10px;
+}
+.card-body{
+    max-height: 142px !important;
 }
