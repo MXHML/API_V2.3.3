@@ -1,16 +1,6 @@
 
 
 //Variables & constants
-let li1 = document.getElementById("li1");
-let li2 = document.getElementById("li2");
-let user_response = document.getElementById("user_response")
-let number_of_results = document.getElementById("number_of_results")
-let title_ul = document.getElementById("title_ul");
-// eslint-disable-next-line no-unused-vars
-let htmlsearchresults = document.getElementById("htmlsearchresults");
-let apiresponseCode = ''
-let coverart_wrapper = document.getElementById("coverart_wrapper");
-let coverart_image = document.getElementById("coverart");
 
 const time = new Date();
 let access_token = "";
