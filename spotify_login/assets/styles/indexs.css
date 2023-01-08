@@ -1,59 +1,54 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 *{
-    font-family: 'VT323', monospace;
-    font-size:20px;
 }
 html{
-    background-color: black;
+    height:100vh;
+    width:100vw;
+    background-image:linear-gradient(to right,rgb(209, 203, 203),rgb(155, 152, 152));
 }
-li{
-    color: rgb(0, 255, 0);
-    list-style-type: none;
-    margin-bottom: 9px;
+.spot-logo{
+    height:40%;
+    width:40%;
+    object-fit: scale-down;
 }
-#title_ul{
-    margin:0px;
+
+#results_ammount_tb, #search_textbox{
+    background-color: rgba(0,0,0,0);
+    color:white;
+    text-align:center;
+    margin-bottom: 5px;
+}
+input::placeholder{
+    text-align: center;
+}
+input:focus{
+    outline-color: white;
+    outline-style: solid;
+}
+#entries{
+    border-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+}
+@keyframes moveUp{
+    100%{top:5px}
+}
+
+@keyframes floatBubble {
+    100% {
+      top: 0px;
+    }
+  }
+  
+  div.element-up {
+    z-index: 10;
+    animation: floatBubble 2s forwards;
     position: absolute;
-}
-#htmlsearchresults{
-    margin-top: 0px;
-    top:100px;
-    position: fixed;
-    padding-left: 40px;
-}
-.responseBox{
-    background-color:black;
-    color:rgb(0,255,0);
-    border:none;
-    margin-bottom:25px;
-    position: static;
-    outline: none;
-    margin-right:10px;
-}
-#title_ul{
-    display: inline-block;
-}
-#title{
-    display: inline-block;
-}
-.pauseBtn{
-    cursor: pointer;
-    font-size: 30px;
-    color:rgb(0, 255, 0);
-    position:absolute;
-}
-.red{
-    display: inline;
-    color:red;
-}
-.disabled{
-    color:grey;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    display: inline;
-    pointer-events: none;
-}
-.coverart{
-    margin-top:auto;
-    float:right;
+  }
+
+.response-card{
+    background:rgba(255,255,255,0.6) !important;
+    display: inline-block !important;
+    margin:0 !important;
 }
