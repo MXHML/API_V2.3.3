@@ -2,26 +2,48 @@ const name_wrapper = document.getElementById("name-wrapper");
 const search_textbox = document.getElementById("search_textbox")
 const results_amount_tb = document.getElementById("results_ammount_tb")
 const content_wrapper = document.getElementById("content-wrapper");
+const spotify_login_btn = document.getElementById("spotify_login_btn");
+const login_cancel_btn = document.getElementById("cancel_login_btn")
 
 let apiresponse=[];
 let access_token=""
+const api_id="f6db8902d1a94c1a854359ab73e38d0d"
+const api_secret="x"; //Omitted to push to Github
 
 $(document).ready(()=>{ //When the document is ready
-    getauth() //Gets the authentication token returned from Spotify
     $("#content-wrapper").hide(); //Hiding the main content, so it doesn't overlap with my username fade
+    $("#login-menu").hide();
+    $("#logged_out_error-banner").hide();
     sleep(1000).then(()=>{ //Sleep for 1000ms, see sleep() function
         $("#name-wrapper").fadeOut("slow") //jQuery fadeOut() function
     }).then(()=>{ //Async functions!!!!!!!!
         sleep(1000).then(()=>{ //Sleep for another 1000ms
-                $("#content-wrapper").fadeTo(400,1) //Fade in for 400ms to 1 opacity
+                $("#login-menu").fadeTo(400,1) //Fade in for 400ms to 1 opacity
         })
     })
+    if(window.location.href.includes("access_token")){
+      $("#logged_out_error-banner").hide();
+    }
 })
 
 search_textbox.addEventListener("click",()=>{
     move(document.getElementById("content-wrapper")) //Moves the content div to the top when clicked
 })
 
+spotify_login_btn.addEventListener("click",()=>{
+  if(window.location.href.includes("access_token")){
+    return("Access code found!");
+  }else{
+  getauth();}
+})
+
+login_cancel_btn.addEventListener("click",()=>{
+  $("#login-menu").fadeOut("slow");
+  sleep(1000).then(()=>{
+    $("#content-wrapper").fadeTo(400,1);
+  })
+  $("#logged_out_error-banner").show();
+})
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms)); //Creates a promise for the setTimeout
@@ -83,6 +105,40 @@ function APICall (query,outputlist,callback){
         console.warn("Something went wrong.", err);
       }).then(()=>{
         callback();
+      })
+  }
+
+  function codeFlow(){
+    fetch(
+      `https://accounts.spotify.com/api/token`,
+      {
+        headers:{
+          Authorization: btoa(api_id+":"+api_secret),
+          "Content-Type":"application/x-www-form-urlencoded"
+        },
+        method: "POST",
+        form:{
+          grant_type:"client_credentials"
+        },
+        json:true,
+        mode:"no-cors",
+
+      }
+    )
+      .then(function (response) {
+        apiresponseCode=response.status;
+        if (response.ok) {
+          return response.json();
+        } else { //If response is bad
+          return Promise.reject(response);
+        }
+      })
+      .then(function (data) {
+        apiresponse.push(data);
+      })
+      .catch(function (err) {
+        console.warn("Something went wrong.", err);
+      }).then(()=>{
       })
   }
 
