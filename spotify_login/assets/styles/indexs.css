@@ -56,3 +56,12 @@ input:focus{
 .card-body{
     max-height: 142px !important;
 }
+
+#spotify_login_btn:hover, #cancel_login_btn:hover{
+    background-color:white !important;
+    color:black !important;
+}
+#cancel_login_btn:hover{
+    background-color:white !important;
+    color:black !important;
+}
