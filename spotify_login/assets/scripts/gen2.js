@@ -4,6 +4,7 @@ const results_amount_tb = document.getElementById("results_ammount_tb")
 const content_wrapper = document.getElementById("content-wrapper");
 const spotify_login_btn = document.getElementById("spotify_login_btn");
 const login_cancel_btn = document.getElementById("cancel_login_btn")
+const results_container = document.getElementById("results-container");
 
 let apiresponse=[];
 let access_token=""
@@ -14,11 +15,12 @@ $(document).ready(()=>{ //When the document is ready
     $("#content-wrapper").hide(); //Hiding the main content, so it doesn't overlap with my username fade
     $("#login-menu").hide();
     $("#logged_out_error-banner").hide();
+    getauth();
     sleep(1000).then(()=>{ //Sleep for 1000ms, see sleep() function
         $("#name-wrapper").fadeOut("slow") //jQuery fadeOut() function
     }).then(()=>{ //Async functions!!!!!!!!
         sleep(1000).then(()=>{ //Sleep for another 1000ms
-                $("#login-menu").fadeTo(400,1) //Fade in for 400ms to 1 opacity
+                $("#content-wrapper").fadeTo(400,1) //Fade in for 400ms to 1 opacity
         })
     })
     if(window.location.href.includes("access_token")){
@@ -30,20 +32,20 @@ search_textbox.addEventListener("click",()=>{
     move(document.getElementById("content-wrapper")) //Moves the content div to the top when clicked
 })
 
-spotify_login_btn.addEventListener("click",()=>{
-  if(window.location.href.includes("access_token")){
-    return("Access code found!");
-  }else{
-  getauth();}
-})
+// spotify_login_btn.addEventListener("click",()=>{
+//   if(window.location.href.includes("access_token")){
+//     return("Access code found!");
+//   }else{
+//   getauth();}
+// })
 
-login_cancel_btn.addEventListener("click",()=>{
-  $("#login-menu").fadeOut("slow");
-  sleep(1000).then(()=>{
-    $("#content-wrapper").fadeTo(400,1);
-  })
-  $("#logged_out_error-banner").show();
-})
+// login_cancel_btn.addEventListener("click",()=>{
+//   $("#login-menu").fadeOut("slow");
+//   sleep(1000).then(()=>{
+//     $("#content-wrapper").fadeTo(400,1);
+//   })
+//   $("#logged_out_error-banner").show();
+// })
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms)); //Creates a promise for the setTimeout
@@ -57,6 +59,7 @@ function sleep(ms) {
 
 search_textbox.addEventListener("keypress",(event)=>{
         if(event.key=="Enter"){ //Checks for the "enter" keyevent
+          console.log("# Of ammount box pressed!")
             let temp=search_textbox.value.replace(' ','%20') //Removes spaces and replaces them for %20, so the API request isn't malformed
             console.log("Starting...") //Debug
             APICall(`search?q=${temp}&type=track&limit=${results_amount_tb.value}`,apiresponse,()=>{console.log("Done!")}) //Call the API, push the response to apiresponse, then log ("Done!")
@@ -64,14 +67,16 @@ search_textbox.addEventListener("keypress",(event)=>{
     }
 )
 
-results_amount_tb.addEventListener("keypress",(event)=>{ //Same as the one above, just accounting for people pressing enter on either box
-    if(event.key=="Enter"){
-        console.log("Starting...")
-        APICall(`search?q=${search_textbox.value}&type=track&limit=${results_amount_tb.value}`,apiresponse,()=>{responseConversion().then((data)=>{NameChecker()
-        })})
-    }
-}
-)
+results_amount_tb.addEventListener("keypress", (event) => {
+  //Same as the one above, just accounting for people pressing enter on either box
+  apiresponse = [];
+  console.log("# Of ammount box pressed!");
+  if (event.key == "Enter") {
+    console.log("Starting...");
+    APICall(
+      `search?q=${search_textbox.value}&type=track&limit=${results_amount_tb.value}`,
+      apiresponse,
+      () => {responseConversion()})}});
 
 function APICall (query,outputlist,callback){
     console.warn(`CALLING:https://api.spotify.com/v1/${query}, AND PUSHING TO ${toString(outputlist)}`);
@@ -109,37 +114,29 @@ function APICall (query,outputlist,callback){
   }
 
   function codeFlow(){
-    fetch(
-      `https://accounts.spotify.com/api/token`,
-      {
-        headers:{
-          Authorization: btoa(api_id+":"+api_secret),
-          "Content-Type":"application/x-www-form-urlencoded"
-        },
-        method: "POST",
-        form:{
-          grant_type:"client_credentials"
-        },
-        json:true,
-        mode:"no-cors",
-
-      }
-    )
-      .then(function (response) {
-        apiresponseCode=response.status;
+    const options = {
+      method: 'POST',
+      headers: { 'Authorization': 'Basic ' + btoa(api_id + ':' + api_secret)},
+      mode:'no-cors',
+      json:'true',
+      body: JSON.stringify({
+        grant_type: 'client_credentials'
+      }),
+    };
+    
+    fetch('https://accounts.spotify.com/api/token', options)
+      .then(response => {
         if (response.ok) {
           return response.json();
-        } else { //If response is bad
-          return Promise.reject(response);
         }
+        throw new Error('Request failed!');
       })
-      .then(function (data) {
-        apiresponse.push(data);
+      .then(body => {
+        const token = body.access_token;
       })
-      .catch(function (err) {
-        console.warn("Something went wrong.", err);
-      }).then(()=>{
-      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   function getauth() {
@@ -157,7 +154,7 @@ function APICall (query,outputlist,callback){
 
 async function responseConversion(){
     for(let x=0;x<apiresponse[0].tracks.items.length;x++){
-        content_wrapper.innerHTML+=`
+        results_container.innerHTML+=`
         <div id="${x}" class="card response-card text-dark" style="width:18rem;">
         <img src="${apiresponse[0].tracks.items[x].album.images[0].url}" class="card-img-top">
         <div class="card-body">
@@ -168,8 +165,8 @@ async function responseConversion(){
     </div>
         `
     }
+    NameChecker();
     Promise.resolve("done");
-
 }
 
 async function TitleClear(index){ //Async function so ScrollConverter only proceeds when the innerHTML is cleared. 

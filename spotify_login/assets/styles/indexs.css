@@ -65,3 +65,11 @@ input:focus{
     background-color:white !important;
     color:black !important;
 }
+#current-user{
+    height:100px;
+    width:100px;
+    right:2px;
+}
+#current-user img{
+    border-radius: 50%;
+}
