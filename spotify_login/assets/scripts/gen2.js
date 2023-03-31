@@ -62,6 +62,7 @@ search_textbox.addEventListener("keypress",(event)=>{
           console.log("# Of ammount box pressed!")
             let temp=search_textbox.value.replace(' ','%20') //Removes spaces and replaces them for %20, so the API request isn't malformed
             console.log("Starting...") //Debug
+            console.log(search_textbox.value);
             APICall(`search?q=${temp}&type=track&limit=${results_amount_tb.value}`,apiresponse,()=>{console.log("Done!")}) //Call the API, push the response to apiresponse, then log ("Done!")
         }
     }
@@ -73,10 +74,15 @@ results_amount_tb.addEventListener("keypress", (event) => {
   console.log("# Of ammount box pressed!");
   if (event.key == "Enter") {
     console.log("Starting...");
+    if(search_textbox.value=="Top Songs"||search_textbox.value=="top songs"||search_textbox.value=='Top songs'){
+      APICall("me/top/tracks",apiresponse,()=>{
+        responseConversion("top_songs");
+      })
+    }else{
     APICall(
       `search?q=${search_textbox.value}&type=track&limit=${results_amount_tb.value}`,
       apiresponse,
-      () => {responseConversion()})}});
+      () => {responseConversion("artist_search")})}}});
 
 function APICall (query,outputlist,callback){
     console.warn(`CALLING:https://api.spotify.com/v1/${query}, AND PUSHING TO ${toString(outputlist)}`);
@@ -152,7 +158,8 @@ function APICall (query,outputlist,callback){
     }
   }
 
-async function responseConversion(){
+async function responseConversion(type){
+  if(type=="artist_search"){
     for(let x=0;x<apiresponse[0].tracks.items.length;x++){
         results_container.innerHTML+=`
         <div id="${x}" class="card response-card text-dark" style="width:18rem;">
@@ -167,6 +174,22 @@ async function responseConversion(){
     }
     NameChecker();
     Promise.resolve("done");
+  }
+  else if(type=="top_songs"){
+    for(let x=0;x<apiresponse[0].items.length;x++){
+      results_container.innerHTML+=`
+      <div id="${x}" class="card response-card text-dark" style="width:18rem;">
+      <img src="${apiresponse[0].items[x].album.images[0].url}" class="card-img-top">
+      <div class="card-body">
+          <h5 id="card_title_${x}"class="card-title">${apiresponse[0].items[x].name}</h5>
+          <p class="card-text">Uploaded By: ${apiresponse[0].items[x].artists[0].name}</p>
+          <a href="${apiresponse[0].items[x].external_urls.spotify}" class="btn btn-light" target="_self">Link To Song</a>
+      </div>
+  </div>
+      `
+      NameChecker();
+    }
+  }
 }
 
 async function TitleClear(index){ //Async function so ScrollConverter only proceeds when the innerHTML is cleared. 
@@ -180,21 +203,36 @@ async function TitleClear(index){ //Async function so ScrollConverter only proce
   }
 }
 
-function ScrollConverter(index){
+function ScrollConverter(index,artist_search){
   index = index.toString(); //So that you can enter a float instead of a string each time. (Ex. ScrollConverter(6), instead of ScrollConverter("6"))
   let target =document.getElementById(`card_title_${index}`) //Setting the target
   console.log(target) //Debug
+  if(artist_search==true){
   TitleClear(index.toString()).then((value)=>{console.log("Promise Fufilled...");target.innerHTML=`<marquee scrollamount="5" behavior="scroll" direction="left">${apiresponse[0].tracks.items[index].name}</marquee>`},(error)=>{
     console.log(error) //If the promise is fufilled, then change the innerHTML of the element to a <marquee> element. If not, then return the error
-  })
+  })}else{
+    TitleClear(index.toString()).then((value)=>{console.log("Promise Fufilled...");target.innerHTML=`<marquee scrollamount="5" behavior="scroll" direction="left">${apiresponse[0].items[index].name}</marquee>`},(error)=>{
+      console.log(error) //If the promise is fufilled, then change the innerHTML of the element to a <marquee> element. If not, then return the error
+    })
+  }
 }
 
-function NameChecker(){
+function NameChecker(artist_search){
+if(artist_search==true){
   for(let x=0;x<apiresponse[0].tracks.items.length;x++){ //Loop through all of the returned items
     if(apiresponse[0].tracks.items[x].name.length>23){ //If the length is greater than 23, convert it to scrolling text.
       ScrollConverter(x)
     }else{
       console.log("Not out of bounds!")
     }
+  }}
+else{
+  for(let x=0;x<apiresponse[0].items.length;x++){ //Loop through all of the returned items
+    if(apiresponse[0].items[x].name.length>23){ //If the length is greater than 23, convert it to scrolling text.
+      ScrollConverter(x)
+    }else{
+      console.log("Not out of bounds!")
+    }
   }
+}
 }
